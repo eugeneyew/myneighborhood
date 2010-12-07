@@ -1,0 +1,21 @@
+sdk: "/opt/local/lib/ruby/gems/1.8/gems/rhodes-2.2.3"
+sdkversion: 2.2.3
+name: poc
+version: 1.0
+vendor: rhomobile
+build: debug
+bbver: 4.6
+wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
+applog: rholog.txt
+iphone:
+  configuration: Debug
+  sdk: iphonesimulator4.0
+  provisionprofile:
+  codesignidentity:
+  entitlements:
+  BundleIdentifier: com.accenture.iphone.myneighbourhood
+  BundleURLScheme: myneighbourhood
+extensions: 
+ - json
+capabilities:
+ - gps
