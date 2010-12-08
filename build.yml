@@ -1,6 +1,6 @@
 sdk: "/opt/local/lib/ruby/gems/1.8/gems/rhodes-2.2.3"
 sdkversion: 2.2.3
-name: poc
+name: My Neighbourhood
 version: 1.0
 vendor: rhomobile
 build: debug
@@ -17,5 +17,6 @@ iphone:
   BundleURLScheme: myneighbourhood
 extensions: 
  - json
+ - uri
 capabilities:
  - gps

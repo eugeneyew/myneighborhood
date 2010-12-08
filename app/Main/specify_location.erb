@@ -1,0 +1,14 @@
+<div class="content">
+	<div style="position: relative">
+		<img src="/public/images/iphone/main4_background.png" height="<%= System.get_property("screen_height") %>" width="<%= System.get_property("screen_width") %>" />
+		<div style="position: absolute; top: 80px; left: 0;">
+			<%= @error + "<br />" unless @error.nil? %>
+			<form class="panel" title="Specify Address" id="specify_address_form" method="POST" action="<%= url_for(:action => :geocode_address) %>">
+				<b>Address</b><br />
+				<input type="text" name="address" style="background-color: white; border: 1px solid black; width: 300px;" />
+				<input type="submit" value="Next" class="standardButton" />
+			</form>
+		</div>
+	</div>
+</div>
+
