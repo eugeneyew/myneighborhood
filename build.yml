@@ -15,6 +15,10 @@ iphone:
   entitlements:
   BundleIdentifier: com.accenture.iphone.myneighbourhood
   BundleURLScheme: myneighbourhood
+android:
+  mapping: yes
+  apikey: "abcd"
+  version: 2.2
 extensions: 
  - json
  - uri
