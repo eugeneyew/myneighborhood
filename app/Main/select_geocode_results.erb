@@ -1,9 +1,0 @@
-<div class="content">
-	<ul>
-		<% @addresses.each do |address| %>
-    <li>
-			<%= link_to address, :action => :geocode_address, :query => { :address => address } %>
-		</li>
-		<% end %>
-  </ul>
-</div>
