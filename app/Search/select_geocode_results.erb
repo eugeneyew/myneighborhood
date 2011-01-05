@@ -1,0 +1,9 @@
+<div class="content">
+	<ul>
+		<% @addresses.each do |address| %>
+    <li>
+			<%= link_to address, url_for_type(:action => :geocode_other_location, :query => { :other_location => address }) %>
+		</li>
+		<% end %>
+  </ul>
+</div>
