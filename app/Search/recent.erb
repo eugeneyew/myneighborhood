@@ -1,0 +1,13 @@
+<div class="content">
+	<ul>
+		<% @past_searches.each do |search| %>
+			<li>
+				<% if search.type == :nearby %>
+					Nearby <%= search.lat %>,<%= search.long %>
+				<% else %>
+					<%= link_to search.term, url_for_type(:action => :listing, :query => { :search_id => search.object }) %>
+				<% end %>
+			</li>
+		<% end %>
+	</ul>
+</div>

@@ -1,5 +1,5 @@
 # Startup page for your application
-start_path = '/app/Recent'
+start_path = '/app/Search?type=recent'
 
 # Path to the options page (in this case handled by javascript)
 options_path = '/app/Settings'

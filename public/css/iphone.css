@@ -408,3 +408,12 @@ h1 {
     margin: 0 8px;
     color: #565E70;
 }
+
+.wait_screen {
+	width: 80%;
+	border-radius: 15px;
+	background-color: white;
+	border 1px solid black;
+	padding: 20px 5px 20px 5px;
+	top: 25px;
+}

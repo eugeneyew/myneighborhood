@@ -5,7 +5,7 @@ class AppApplication < Rho::RhoApplication
     # Tab items are loaded left->right, @tabs[0] is leftmost tab in the tab-bar
     # Super must be called *after* settings @tabs!
     @tabs = [
-      { :label => "Recent", :action => '/app/Recent', :icon => "/public/images/tabs/home_btn.png", :reload => true },
+      { :label => "Recent", :action => '/app/Search?type=recent', :icon => "/public/images/tabs/home_btn.png", :reload => true },
       { :label => "Nearby",  :action => '/app/Search?type=nearby',  :icon => "/public/images/tabs/122-stats.png" }, 
       { :label => "Other Location",  :action => '/app/Search?type=location',  :icon => "/public/images/tabs/07-map-marker.png" }, 
     ]

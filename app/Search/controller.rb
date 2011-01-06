@@ -6,10 +6,17 @@ require 'json'
 
 class SearchController < Rho::RhoController
   include BrowserHelper
+  
+  def recent
+		NavBar.create :title => "Recent"
+		@past_searches = Search.find(:all, :order => :last_use_time, :orderdir => "DESC", :per_page => 15)
+  	render # => recent.erb
+	end
 
   def wait
   	resolve_type
   	NavBar.remove
+  	@message = @params["message"] || "Please wait..."
   	render # => wait.erb
 	end
 
@@ -25,23 +32,29 @@ class SearchController < Rho::RhoController
 		render
 	end
   
-  # Dispatch a user to the correct location
+  # Dispatch a user to the correct action
   def index
   	resolve_type
   	NavBar.remove
 		if @search_type == :nearby and !GeoLocation.known_position? and (@params["lat"].nil? and @params["long"].nil?)
 			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), type_queryhashstr)
-			redirect_for_type :action => :wait
-			return
+			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
 		elsif @search_type == :nearby and GeoLocation.known_position?
 			lat = GeoLocation.latitude
 			long = GeoLocation.longitude
 			redirect_for_type(:action => :listing, :query => {:lat => lat, :long => long})
-		elsif @search_type != :nearby and @params["lat"] and @params["long"] and @params["other_location"]
+		elsif @search_type == :location and @params["lat"] and @params["long"] and @params["other_location"]
 			redirect_for_type(:action => :listing, :query => @params)
-		else
+		elsif @search_type == :location
 			redirect_for_type(:action => :input_other_location) 
+		elsif @search_type == :recent and @params["search_id"]
+			redirect_for_type(:action => :listing, :query => { :search_id => @params["search_id"] })
+		elsif @search_type == :recent 
+			redirect_for_type(:action => :recent)
+		else
+			redirect_for_type(:action => :error) 
 		end
+		@message = "Processing..."
 		render :wait # Show the waitpage, when complete we will be redirected to listing
   end
 
@@ -49,20 +62,42 @@ class SearchController < Rho::RhoController
   	resolve_type
 
   	# Send them back to the index if we have no location.
-  	return redirect_for_type(:action => :index) unless @params["lat"] and @params["long"]
+  	return redirect_for_type(:action => :index) unless @params["lat"] and @params["long"] if @search_type != :recent
 
-  	# Send them back to the index if the search type is not nearby and we dont have a loction input
-  	return redirect_for_type(:action => :index) if @search_type != :nearby and !@params["other_location"]
-		
-		@lat = @params["lat"]
-		@long = @params["long"]
-		@location = @params["other_location"]
+  	# Send them back to the index if the search type is location and we dont have a loction input
+  	return redirect_for_type(:action => :index) if @search_type == :location and !@params["other_location"]
+
+  	# Send them back to the index is search type is recent yet we have no search id (or it does not exist)
+		return redirect_for_type(:action => index) if @search_type == :recent and !@params["search_id"]
+
+		if @search_type != :recent
+			@lat = @params["lat"]
+			@long = @params["long"]
+			@location = @params["other_location"]
+
+			# Add this search to search history. We will use it to populate the Recent tab.
+			Search.create({
+				:type => @search_type,
+				:term => @location,
+				:lat => @lat,
+				@long => @long,
+				:last_use_time => Time.now
+			}) unless @params["dontsave"]
+
+		else
+			search = Search.find(@params["search_id"])
+			@lat = search.lat
+			@long = search.long
+			@location = search.term
+		end
   
   	# Setup NavBar as required.
   	if @search_type == :nearby
 			NavBar.create :title => "Nearby"
 		else 
-			NavBar.create :title => @location, :left => {:action => url_for_type(:action => :index), :label => "Back"}
+			url = url_for_type(:action => :input_other_location)
+			url = url_for_type(:action => :recent) if @search_type == :recent
+			NavBar.create :title => @location, :left => {:action => url, :label => "Back"}
 		end
 		
 		render # => listing.erb
@@ -85,6 +120,7 @@ class SearchController < Rho::RhoController
 				:callback => (url_for_type :action => :geocode_other_location_callback),
 				:callback_param => type_queryhashstr )
 
+		@message = "Searching for location..."
 		render :action => :wait
 	end
 
@@ -120,7 +156,7 @@ class SearchController < Rho::RhoController
   	# Try again if the first call failed, seems to be needed on the simulator...
   	if @params["known_position"].to_i == 0 || @params["status"] != "ok" 
 			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), type_queryhashstr) 
-  		redirect_for_type :action => :wait
+			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
 		end
 	end
 	
@@ -149,6 +185,8 @@ class SearchController < Rho::RhoController
 				:url => url,
 				:callback => (url_for_type :action => :display_mapped_data_callback),
 				:callback_param => query_hash_to_str(@params) )
+		
+		@message = "Retrieving data..."
 		render :action => :wait
 
 	end
@@ -189,15 +227,15 @@ class SearchController < Rho::RhoController
 		MapView.create map_params
 
 		# Put the listings page behind the plotted map
-		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location})
+		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location, :dontsave => true})
 
 	end
 
   private
    
 		def resolve_type
-			@search_type = :location
-			@search_type = :nearby if @params["type"] == "nearby"
+			return @search_type = @params["type"].to_sym if @params["type"]
+			@search_type = :unknown
 		end
 
 		def type_queryhash
