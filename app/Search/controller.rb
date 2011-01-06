@@ -189,7 +189,8 @@ class SearchController < Rho::RhoController
 		
 		# Call GAE Data Service then display the map
 		# or used saved search data...
-		url = sprintf("%s/parking_facility/%s/%s", Rho::RhoConfig.data_url_base, Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
+		url = sprintf("%s/parking_facility/%s,%s", Rho::RhoConfig.data_url_base, Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
+		puts " Calling URL: " + url
 		Rho::AsyncHttp.get(
 				:url => url,
 				:callback => (url_for_type :action => :display_mapped_data_callback),
@@ -236,7 +237,7 @@ class SearchController < Rho::RhoController
     #obj = Rho::JSON.parse(@params["body"])
     obj = @params["body"]
 
-    annotations = obj["ParkingFacility"].map do |pf|
+    annotations = obj["parkingFacilityList"].map do |pf|
 			{ :latitude => pf["latitude"],
 				:longitude => pf["longitude"],
 				:title => pf["entityName"],
@@ -246,11 +247,8 @@ class SearchController < Rho::RhoController
 
 		map_params = {
 			:settings => {
-				:map_type => "standard",
-				:region => [@lat, @long, 0.01, 0.01],
-				:zoom_enabled => true,
-				:scroll_enabled => true,
-				:shows_user_location => true
+				:region => [@lat, @long, 0.1, 0.1],
+				:zoom_enabled => true
 			},
 			:annotations => annotations
 		}

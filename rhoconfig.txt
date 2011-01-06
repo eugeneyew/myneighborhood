@@ -35,5 +35,5 @@ jqtouch_mode=1
 google_geocoding_url = 'http://maps.google.com/maps/geo?q=%s&output=json&key=123abc'
 
 # Data URL base (no trailing slash)
-data_url_base = 'http://skawakam6.appspot.com/ws/json'
+data_url_base = 'http://skawakam7.appspot.com/rest/json'
 
