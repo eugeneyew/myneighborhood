@@ -15,9 +15,14 @@ class SearchController < Rho::RhoController
 
   def wait
   	resolve_type
-  	NavBar.remove
   	@message = @params["message"] || "Please wait..."
   	render # => wait.erb
+	end
+
+  def wait
+  	resolve_type
+  	@message = @params["message"] || "An error has occured"
+  	render # => error.erb
 	end
 
 	def geolocation_error
@@ -37,7 +42,8 @@ class SearchController < Rho::RhoController
   	resolve_type
   	NavBar.remove
 		if @search_type == :nearby and !GeoLocation.known_position? and (@params["lat"].nil? and @params["long"].nil?)
-			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), type_queryhashstr)
+			NavBar.create :title => "Nearby"
+			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), default_query_hash_str)
 			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
 		elsif @search_type == :nearby and GeoLocation.known_position?
 			lat = GeoLocation.latitude
@@ -68,27 +74,17 @@ class SearchController < Rho::RhoController
   	return redirect_for_type(:action => :index) if @search_type == :location and !@params["other_location"]
 
   	# Send them back to the index is search type is recent yet we have no search id (or it does not exist)
-		return redirect_for_type(:action => index) if @search_type == :recent and !@params["search_id"]
+		return redirect_for_type(:action => :index) if @search_type == :recent and !@params["search_id"]
 
 		if @search_type != :recent
 			@lat = @params["lat"]
 			@long = @params["long"]
 			@location = @params["other_location"]
-
-			# Add this search to search history. We will use it to populate the Recent tab.
-			Search.create({
-				:type => @search_type,
-				:term => @location,
-				:lat => @lat,
-				@long => @long,
-				:last_use_time => Time.now
-			}) unless @params["dontsave"]
-
 		else
-			search = Search.find(@params["search_id"])
-			@lat = search.lat
-			@long = search.long
-			@location = search.term
+			@search = Search.find(@params["search_id"])
+			@lat = @search.lat
+			@long = @search.long
+			@location = @search.location
 		end
   
   	# Setup NavBar as required.
@@ -114,11 +110,11 @@ class SearchController < Rho::RhoController
 		addr = @params["other_location"]
 		# todo Error handling...
 
-		url = sprintf("http://maps.google.com/maps/geo?q=%s&output=json&key=123abc", Rho::RhoSupport.url_encode(addr))
+		url = sprintf(Rho::RhoConfig.google_geocoding_url, Rho::RhoSupport.url_encode(addr))
 		Rho::AsyncHttp.get(
 				:url => url,
 				:callback => (url_for_type :action => :geocode_other_location_callback),
-				:callback_param => type_queryhashstr )
+				:callback_param => default_query_hash_str )
 
 		@message = "Searching for location..."
 		render :action => :wait
@@ -155,7 +151,7 @@ class SearchController < Rho::RhoController
 		webview_navigate_for_type(:index) if @params["known_position"].to_i != 0 && @params["status"] == "ok"
   	# Try again if the first call failed, seems to be needed on the simulator...
   	if @params["known_position"].to_i == 0 || @params["status"] != "ok" 
-			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), type_queryhashstr) 
+			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), default_query_hash_str) 
 			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
 		end
 	end
@@ -170,21 +166,34 @@ class SearchController < Rho::RhoController
   	resolve_type
 
   	# Send them back to the index if we have no location.
-  	return redirect_for_type(:action => :index) unless @params["lat"] and @params["long"]
+  	return redirect_for_type(:action => :index) if !(@params["lat"] and @params["long"]) and @search_type != :recent
 
   	# Send them back to the index if the search type is not nearby and we dont have a loction input
-  	return redirect_for_type(:action => :index) if @search_type != :nearby and !@params["other_location"]
-		
-		@lat = @params["lat"]
-		@long = @params["long"]
-		@location = @params["other_location"]
+  	return redirect_for_type(:action => :index) if @search_type == :location and !@params["other_location"]
 
+  	# Send them back to the index is search type is recent yet we have no search id (or it does not exist)
+		return redirect_for_type(:action => :index) if @search_type == :recent and !@params["search_id"]
+
+		if @search_type != :recent
+			@lat = @params["lat"]
+			@long = @params["long"]
+			@location = @params["other_location"]
+			params = @params
+		else
+			@search = Search.find(@params["search_id"])
+			@lat = @search.lat
+			@long = @search.long
+			@location = @search.location
+			params = { :lat => @lat, :long => @long, :location => @location, :search_id => @search.object } 
+		end
+		
 		# Call GAE Data Service then display the map
-		url = sprintf("http://skawakam6.appspot.com/ws/json/parking_facility/%s/%s", Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
+		# or used saved search data...
+		url = sprintf("%s/parking_facility/%s/%s", Rho::RhoConfig.data_url_base, Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
 		Rho::AsyncHttp.get(
 				:url => url,
 				:callback => (url_for_type :action => :display_mapped_data_callback),
-				:callback_param => query_hash_to_str(@params) )
+				:callback_param => query_hash_to_str(default_query_hash.merge(params)))
 		
 		@message = "Retrieving data..."
 		render :action => :wait
@@ -195,9 +204,33 @@ class SearchController < Rho::RhoController
 
   	resolve_type
 
+   if @params['status'] != 'ok'
+  		# The HTTP request for data failed with an error. Display an error.
+      puts " Rho error : #{Rho::RhoError.new(@params['error_code'].to_i).message}"
+      puts " Http error : #{@params['http_error']}"
+      puts " Http response: #{@params['body']}"
+			return WebView.navigate url_for_type(:action => :error, :query => {})
+		end
+
 		@lat = @params["lat"]
 		@long = @params["long"]
 		@location = @params["other_location"]
+
+		# Add this search to search history. We will use it to populate the Recent tab.
+		if @params["search_id"]
+			@search = Search.find(@params["search_id"])
+			@search.last_use_time = Time.now
+			@search.save
+		else
+			Search.create({
+				:type => @search_type,
+				:location => @location,
+				:category => "Parking",
+				:lat => @lat,
+				:long => @long,
+				:last_use_time => Time.now
+			})
+		end
     	
     # Response is automagically parsed into a ruby Hash object
     #obj = Rho::JSON.parse(@params["body"])
@@ -217,8 +250,7 @@ class SearchController < Rho::RhoController
 				:region => [@lat, @long, 0.01, 0.01],
 				:zoom_enabled => true,
 				:scroll_enabled => true,
-				:shows_user_location => true,
-				:api_key => 'Google Maps API Key'
+				:shows_user_location => true
 			},
 			:annotations => annotations
 		}
@@ -227,7 +259,7 @@ class SearchController < Rho::RhoController
 		MapView.create map_params
 
 		# Put the listings page behind the plotted map
-		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location, :dontsave => true})
+		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
 
 	end
 
@@ -238,12 +270,14 @@ class SearchController < Rho::RhoController
 			@search_type = :unknown
 		end
 
-		def type_queryhash
-			return { :type => @params["type"] }
+		def default_query_hash
+			base = { :type => @params["type"] }
+			base[:search_id] = @search.object unless @search.nil?
+			base
 		end
 
-		def type_queryhashstr
-			query_hash_to_str(type_queryhash)
+		def default_query_hash_str
+			query_hash_to_str(default_query_hash)
 		end
 
 		def query_hash_to_str(hash)
@@ -251,7 +285,7 @@ class SearchController < Rho::RhoController
 		end
 
 		def url_for_type(hash)
-			hash[:query] = hash[:query].merge(type_queryhash) rescue type_queryhash
+			hash[:query] = hash[:query].merge(default_query_hash) rescue default_query_hash
 			url_for(hash)
 		end
 		
@@ -260,7 +294,7 @@ class SearchController < Rho::RhoController
 		end
 
 		def webview_navigate_for_type(action)
-			WebView.navigate url_for(:action => action, :query => type_queryhash)
+			WebView.navigate url_for(:action => action, :query => default_query_hash)
 		end
 
 end

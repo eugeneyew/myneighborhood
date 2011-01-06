@@ -6,10 +6,10 @@
 	<% end %>
 	<form title="Other Location" method="POST" action="<%= url_for_type(:action => :geocode_other_location) %>">
     <ul>
-          <li>
-            <label for="other_location" class="fieldLabel">Other Location</label>
-						<input type="text" name="other_location" />
-          </li>
+			<li>
+				<label for="other_location" class="fieldLabel">Other Location</label>
+				<input type="text" name="other_location" <%= placeholder("Other Location") %> />
+			</li>
     </ul>
     <input type="submit" class="standardButton" value="Next"/>
 	</form>

@@ -15,7 +15,7 @@ MinSeverity  = 1
 LogToOutput = 1
 LogCategories = *
 ExcludeLogCategories =
-KeepTrackOfLastVisitedPage = 0 
+KeepTrackOfLastVisitedPage = 0
 LastVisitedPage = ''
 
 # Sync server url. Typically this will look like 'http://<hostname>:<port>/application'
@@ -30,3 +30,10 @@ logname='poc'
 
 # Hides forward button and animates back button transition
 jqtouch_mode=1
+
+# Geocoding URL, sprintf format, %s represents query string
+google_geocoding_url = 'http://maps.google.com/maps/geo?q=%s&output=json&key=123abc'
+
+# Data URL base (no trailing slash)
+data_url_base = 'http://skawakam6.appspot.com/ws/json'
+

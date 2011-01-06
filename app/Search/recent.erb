@@ -1,13 +1,19 @@
 <div class="content">
 	<ul>
-		<% @past_searches.each do |search| %>
+		<% if @past_searches.length == 0 %>
 			<li>
-				<% if search.type == :nearby %>
-					Nearby <%= search.lat %>,<%= search.long %>
-				<% else %>
-					<%= link_to search.term, url_for_type(:action => :listing, :query => { :search_id => search.object }) %>
-				<% end %>
+				No Recent Searches
 			</li>
+		<% else %>
+			<% @past_searches.each do |search| %>
+				<li>
+					<% if search.type == "nearby" %>
+						<%= link_to sprintf("<b>%s,%s</b>, <i>%s</i>", search.lat, search.long, search.category), url_for_type(:action => :map, :query => { :search_id => search.object, :dontsave => true }) %>
+					<% else %>
+						<%= link_to sprintf("<b>%s</b>, <i>%s</i>", search.location, search.category), url_for_type(:action => :map, :query => { :search_id => search.object, :dontsave => true }) %>
+					<% end %>
+				</li>
+			<% end %>
 		<% end %>
 	</ul>
 </div>
