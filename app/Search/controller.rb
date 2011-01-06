@@ -247,6 +247,7 @@ class SearchController < Rho::RhoController
 
 		map_params = {
 			:settings => {
+			  :map_type => "roadmap",
 				:region => [@lat, @long, 0.1, 0.1],
 				:zoom_enabled => true
 			},

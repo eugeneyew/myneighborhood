@@ -1,27 +1,28 @@
 ---
+name: My Neighbourhood
+capabilities:
+- gps
+
+bbver: 5.0
 sdk: "/opt/local/lib/ruby/gems/1.8/gems/rhodes-2.2.3"
 sdkversion: 2.2.3
-name: My Neighbourhood
+applog: rholog.txt
 version: 1.0
 vendor: rhomobile
-build: debug
-bbver: 4.6
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
-applog: rholog.txt
-capabilities:
- - gps
 iphone:
-  configuration: Debug
+  empulator: 4.0.2
   sdk: iphonesimulator4.0
-  provisionprofile:
-  codesignidentity:
-  entitlements:
+  configuration: Debug
+  codesignidentity: ""
+  entitlements: ""
   BundleIdentifier: com.accenture.iphone.myneighbourhood
   BundleURLScheme: myneighbourhood
 android:
   mapping: yes
   apikey: "0huG34HA0SCUkQz7qbLgG2LsZGrZxb5VPqAMnRQ"
   version: 2.2
+
 extensions: 
- - json
- - uri
+- json
+- uri
