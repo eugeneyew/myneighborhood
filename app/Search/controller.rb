@@ -134,6 +134,7 @@ class SearchController < Rho::RhoController
       puts " Rho error : #{Rho::RhoError.new(@params['error_code'].to_i).message}"
       puts " Http error : #{@params['http_error']}"
       puts " Http response: #{@params['body']}"
+      switch_to_tab_for_type
       WebView.navigate ( url_for_type :action => :error ) 
     else
     	obj = @params["body"]
@@ -144,6 +145,7 @@ class SearchController < Rho::RhoController
 			else
 				location = obj["results"][0]["formatted_address"]
 			end
+      switch_to_tab_for_type
 			WebView.navigate url_for_type(:action => :listing, :query => {:lat => @params["lat"], :long => @params["long"], :other_location => location})
 		end
 	end
@@ -153,19 +155,23 @@ class SearchController < Rho::RhoController
       puts " Rho error : #{Rho::RhoError.new(@params['error_code'].to_i).message}"
       puts " Http error : #{@params['http_error']}"
       puts " Http response: #{@params['body']}"
+      switch_to_tab_for_type
       WebView.navigate ( url_for_type :action => :geolocation_error ) 
     else
     	obj = @params["body"]
     	if obj["status"] != "OK" or obj["results"].length == 0
     		# No Results Found
+				switch_to_tab_for_type
     		WebView.navigate url_for_type(:action => :input_other_location, :query => { :error => "Address not found" })
     	elsif obj["results"].length > 1
     		# More than one result found.
     		str = obj["results"].inject("[") { |a, pm| a += '"' + pm["formatted_address"] + '",' } + "]" # No JSON.generate in this version... :(
+				switch_to_tab_for_type
     		WebView.navigate url_for_type(:action => :select_geocode_results, :query => { :addresses => Rho::RhoSupport.url_encode(str) })
 			else
 				coords = obj["results"][0]["geometry"]["location"]
 				location = obj["results"][0]["formatted_address"]
+				switch_to_tab_for_type
 				WebView.navigate url_for_type(:action => :listing, :query => {:lat => coords["lat"], :long => coords["lng"], :other_location => location})
 			end
 		end
@@ -238,6 +244,7 @@ class SearchController < Rho::RhoController
       puts " Rho error : #{Rho::RhoError.new(@params['error_code'].to_i).message}"
       puts " Http error : #{@params['http_error']}"
       puts " Http response: #{@params['body']}"
+      switch_to_tab_for_type
 			return WebView.navigate url_for_type(:action => :error, :query => {})
 		end
 
@@ -286,6 +293,7 @@ class SearchController < Rho::RhoController
 		MapView.create map_params
 
 		# Put the listings page behind the plotted map
+    switch_to_tab_for_type
 		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
 
 	end
@@ -335,6 +343,16 @@ class SearchController < Rho::RhoController
 		
 		def redirect_for_type(hash)
 			redirect url_for_type(hash)
+		end
+
+		# When we use WebView.Navigate we also want to specify a tab 
+		# invase the user has navigated away from the correct tab when the callback fires
+		def switch_to_tab_for_type 
+			tab = 0 if @search_type == :recent
+			tab = 1 if @search_type == :nearby
+			tab = 2 if @search_type == :location
+			# This is in the documentation, but I could not find it in the framework?
+			# Rho::NativeTabbar.switch_tab(tab)
 		end
 
 		def webview_navigate_for_type(action)
