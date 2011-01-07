@@ -14,10 +14,10 @@ class AppApplication < Rho::RhoApplication
 
     super
 
-@default_menu = {
+		@default_menu = {
       "Home" => :home, 
       "Settings" => :options,
-	  "Close" => :close,
+			"Close" => :close,
      }    
     # Uncomment to set sync notification callback to /app/Settings/sync_notify.
     # SyncEngine::set_objectnotify_url("/app/Settings/sync_notify")

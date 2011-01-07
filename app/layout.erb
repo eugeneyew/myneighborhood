@@ -39,7 +39,7 @@
 
 <body>
 	
-	<% if @nav_left or @nav_right %>
+	<% if @use_html_nav == true and @nav_left and @nav_right %>
 		<div class="toolbar">
 			<% if @nav_left %>
 				<div class="leftItem backButton"><a href="<%= @nav_left[:action] %>"><%= @nav_left[:label] %></a></div>
