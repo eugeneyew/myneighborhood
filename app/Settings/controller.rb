@@ -11,6 +11,13 @@ class SettingsController < Rho::RhoController
     render
   end
 
+# Get AppName and Version from rhoconfig.txt
+  def about
+    @appname = Rho::RhoConfig.appname
+    @appversion = Rho::RhoConfig.version
+    render
+  end
+
   def login
     @msg = @params['msg']
     render :action => :login, :back => '/app'
