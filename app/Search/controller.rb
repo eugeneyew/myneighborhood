@@ -8,8 +8,8 @@ class SearchController < Rho::RhoController
   include BrowserHelper
   
   def recent
-		NavBar.create :title => "Recent"
 		@past_searches = Search.find(:all, :order => :last_use_time, :orderdir => "DESC", :per_page => 15)
+		navbar :title => "Recent"
   	render # => recent.erb
 	end
 
@@ -27,13 +27,13 @@ class SearchController < Rho::RhoController
 
 	def geolocation_error
 		resolve_type
-		NavBar.remove
+		navbar
 		render # => geolocation_error.erb
 	end
 	
 	def select_geocode_results
 		@addresses = Rho::JSON.parse(@params["addresses"])
-		NavBar.create :title => "Select Other Location", :left => {:action => url_for_type(:action => :input_other_location), :label => "Back"}
+		navbar :title => "Select Other Location", :left => {:action => url_for_type(:action => :input_other_location), :label => "Back"}
 		render
 	end
   
@@ -41,7 +41,7 @@ class SearchController < Rho::RhoController
   def index
   	resolve_type
 		if @search_type == :nearby and !GeoLocation.known_position? and (@params["lat"].nil? and @params["long"].nil?)
-			NavBar.create :title => "Nearby"
+			navbar :title => "Nearby"
 			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), default_query_hash_str)
 			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
 		elsif @search_type == :nearby and GeoLocation.known_position?
@@ -88,11 +88,11 @@ class SearchController < Rho::RhoController
   
   	# Setup NavBar as required.
   	if @search_type == :nearby
-			NavBar.create :title => @location
+			navbar :title => @location, :right => { :action => url_for_type(:action => :index), :label => "Refresh" }
 		else 
 			url = url_for_type(:action => :input_other_location)
 			url = url_for_type(:action => :recent) if @search_type == :recent
-			NavBar.create :title => @location, :left => {:action => url, :label => "Back"}
+			navbar :title => @location, :left => { :action => url, :label => "Back" }
 		end
 		
 		render # => listing.erb
@@ -101,7 +101,7 @@ class SearchController < Rho::RhoController
   def input_other_location
   	resolve_type
 		@error = @params["error"] unless @params["error"].nil?
-		NavBar.create :title => "Other Location"
+		navbar :title => "Other Location"
   	render # => input_other_location.erb
 	end
 
@@ -291,6 +291,23 @@ class SearchController < Rho::RhoController
 	end
 
   private
+
+	def navbar hash
+		# Use Native NavBar on Apple iPhone. use HTML/CSS navbar's on everything else.
+		platform = System::get_property('platform')
+		if platform == "APPLE"
+			@use_html_nav = false
+			@title = "My Neighbourhood"
+			NavBar.create hash
+		else
+			@use_html_nav = true
+			@title = hash[:title]
+			@nav_left = hash[:left] if hash[:left]
+			@nav_right = hash[:right] if hash[:right]
+		end
+	end
+
+
    
 		def resolve_type
 			return @search_type = @params["type"].to_sym if @params["type"]

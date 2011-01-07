@@ -41,3 +41,6 @@ data_url_base = 'http://skawakam7.appspot.com/rest/json'
 # App Parameters
 appname = 'myNeighbourhood'
 version = '0.2'
+
+# Another change to demonstrate git
+# Change to RhoConfig to demonstrate GIT
