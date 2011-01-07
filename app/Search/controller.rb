@@ -13,21 +13,6 @@ class SearchController < Rho::RhoController
   	render # => recent.erb
 	end
 
-	def navbar hash
-		# Use Native NavBar on Apple iPhone. use HTML/CSS navbar's on everything else.
-		platform = System::get_property('platform')
-		if platform == "APPLE"
-			@use_html_nav = false
-			@title = "My Neighbourhood"
-			NavBar.create hash
-		else
-			@use_html_nav = true
-			@title = hash[:title]
-			@nav_left = hash[:left] if hash[:left]
-			@nav_right = hash[:right] if hash[:right]
-		end
-	end
-
   def wait
   	resolve_type
   	@message = @params["message"] || "Please wait..."
@@ -306,6 +291,23 @@ class SearchController < Rho::RhoController
 	end
 
   private
+
+	def navbar hash
+		# Use Native NavBar on Apple iPhone. use HTML/CSS navbar's on everything else.
+		platform = System::get_property('platform')
+		if platform == "APPLE"
+			@use_html_nav = false
+			@title = "My Neighbourhood"
+			NavBar.create hash
+		else
+			@use_html_nav = true
+			@title = hash[:title]
+			@nav_left = hash[:left] if hash[:left]
+			@nav_right = hash[:right] if hash[:right]
+		end
+	end
+
+
    
 		def resolve_type
 			return @search_type = @params["type"].to_sym if @params["type"]
