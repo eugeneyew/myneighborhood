@@ -8,7 +8,7 @@ class AppApplication < Rho::RhoApplication
       { :label => "Recent", :action => '/app/Search/recent?type=recent', :icon => "/public/images/tabs/home_btn.png", :reload => true },
       { :label => "Nearby",  :action => '/app/Search?type=nearby',  :icon => "/public/images/tabs/122-stats.png" }, 
       { :label => "Other Location",  :action => '/app/Search?type=location',  :icon => "/public/images/tabs/07-map-marker.png" }, 
-      { :label => "Settings",  :action => '/app/Settings',  :icon => "/public/images/tabs/192-credit-card.png" }, 
+      { :label => "Settings",  :action => '/app/Settings',  :icon => "/public/images/tabs/gears.png" }, 
     ]
     @@tabbar = nil
 
