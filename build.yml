@@ -4,8 +4,8 @@ capabilities:
 - gps
 
 bbver: 5.0
-sdk: "/opt/local/lib/ruby/gems/1.8/gems/rhodes-2.2.3"
-sdkversion: 2.2.3
+sdk: "/opt/local/lib/ruby/gems/1.8/gems/rhodes-2.2.6"
+sdkversion: 2.2.6
 applog: rholog.txt
 version: 1.0
 vendor: rhomobile

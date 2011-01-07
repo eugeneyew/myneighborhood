@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>Poc</title>
+		<title><%= @title %></title>
     <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 
     <% if System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' %>
@@ -39,7 +39,19 @@
 </head>
 
 <body>
-    <%= @content %>
+	
+	<% if @nav_left or @nav_right %>
+		<div class="toolbar">
+			<% if @nav_left %>
+				<div class="leftItem backButton"><a href="<%= @nav_left[:action] %>"><%= @nav_left[:label] %></a></div>
+			<% end %>
+			<% if @nav_right %>
+				<div class="rightItem regularButton"><a href="<%= @nav_right[:action] %>"><%= @nav_right[:label] %></a></div>
+			<% end %>
+		</div>
+	<% end %>
+
+	<%= @content %>
 </body>
 
 </html>
