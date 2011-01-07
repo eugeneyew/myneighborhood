@@ -7,11 +7,7 @@
 		<% else %>
 			<% @past_searches.each do |search| %>
 				<li>
-					<% if search.type == "nearby" %>
-						<%= link_to sprintf("<b>%s,%s</b>, <i>%s</i>", search.lat, search.long, search.category), url_for_type(:action => :map, :query => { :search_id => search.object, :dontsave => true }) %>
-					<% else %>
-						<%= link_to sprintf("<b>%s</b>, <i>%s</i>", search.location, search.category), url_for_type(:action => :map, :query => { :search_id => search.object, :dontsave => true }) %>
-					<% end %>
+					<%= link_to sprintf("<b>%s</b>, <i>%s</i>", search.location, search.category), url_for_type(:action => :map, :query => { :search_id => search.object, :dontsave => true }) %>
 				</li>
 			<% end %>
 		<% end %>

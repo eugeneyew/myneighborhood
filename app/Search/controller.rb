@@ -40,7 +40,6 @@ class SearchController < Rho::RhoController
   # Dispatch a user to the correct action
   def index
   	resolve_type
-  	NavBar.remove
 		if @search_type == :nearby and !GeoLocation.known_position? and (@params["lat"].nil? and @params["long"].nil?)
 			NavBar.create :title => "Nearby"
 			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), default_query_hash_str)
@@ -48,7 +47,7 @@ class SearchController < Rho::RhoController
 		elsif @search_type == :nearby and GeoLocation.known_position?
 			lat = GeoLocation.latitude
 			long = GeoLocation.longitude
-			redirect_for_type(:action => :listing, :query => {:lat => lat, :long => long})
+			redirect_for_type(:action => :geocode_other_location, :query => {:lat => lat, :long => long})
 		elsif @search_type == :location and @params["lat"] and @params["long"] and @params["other_location"]
 			redirect_for_type(:action => :listing, :query => @params)
 		elsif @search_type == :location
@@ -68,13 +67,13 @@ class SearchController < Rho::RhoController
   	resolve_type
 
   	# Send them back to the index if we have no location.
-  	return redirect_for_type(:action => :index) unless @params["lat"] and @params["long"] if @search_type != :recent
+  	return redirect_for_type(:action => :error) unless @params["lat"] and @params["long"] if @search_type != :recent
 
-  	# Send them back to the index if the search type is location and we dont have a loction input
-  	return redirect_for_type(:action => :index) if @search_type == :location and !@params["other_location"]
+		# We should have a text address for this location, either what they entered or what we reverse geocoded
+  	return redirect_for_type(:action => :error) if @search_type != :recent and !@params["other_location"]
 
   	# Send them back to the index is search type is recent yet we have no search id (or it does not exist)
-		return redirect_for_type(:action => :index) if @search_type == :recent and !@params["search_id"]
+		return redirect_for_type(:action => :error) if @search_type == :recent and !@params["search_id"]
 
 		if @search_type != :recent
 			@lat = @params["lat"]
@@ -89,7 +88,7 @@ class SearchController < Rho::RhoController
   
   	# Setup NavBar as required.
   	if @search_type == :nearby
-			NavBar.create :title => "Nearby"
+			NavBar.create :title => @location
 		else 
 			url = url_for_type(:action => :input_other_location)
 			url = url_for_type(:action => :recent) if @search_type == :recent
@@ -107,17 +106,46 @@ class SearchController < Rho::RhoController
 	end
 
 	def geocode_other_location
-		addr = @params["other_location"]
-		# todo Error handling...
 
-		url = sprintf(Rho::RhoConfig.google_geocoding_url, Rho::RhoSupport.url_encode(addr))
+		if @params["other_location"] # Geocode an address
+			key = "address"
+			val = @params["other_location"]
+			params = {}
+			cb_action = :geocode_other_location_callback
+		elsif @params["lat"] and @params["long"] # Reverse geocode a lat/long
+			key = "latlng"
+			val = sprintf("%s,%s", @params["lat"], @params["long"])
+			params = { :lat => @params["lat"], :long => @params["long"] }
+			cb_action = :reverse_geocode_callback
+		end
+
+		url = sprintf(Rho::RhoConfig.google_geocoding_url, key, Rho::RhoSupport.url_encode(val))
 		Rho::AsyncHttp.get(
 				:url => url,
-				:callback => (url_for_type :action => :geocode_other_location_callback),
-				:callback_param => default_query_hash_str )
+				:callback => (url_for_type :action => cb_action),
+				:callback_param => query_hash_to_str(default_query_hash.merge(params)))
 
 		@message = "Searching for location..."
 		render :action => :wait
+	end
+
+	def reverse_geocode_callback
+   if @params['status'] != 'ok'
+      puts " Rho error : #{Rho::RhoError.new(@params['error_code'].to_i).message}"
+      puts " Http error : #{@params['http_error']}"
+      puts " Http response: #{@params['body']}"
+      WebView.navigate ( url_for_type :action => :error ) 
+    else
+    	obj = @params["body"]
+    	if obj["status"] != "OK" or obj["results"].length == 0
+    		# No Results Found. Use "Lat,Long",  as locatoin name and send them on their way.
+    		#WebView.navigate url_for_type(:action => :input_other_location, :query => { :error => "Address not found" })
+    		location = sprintf("%s,%s", @params["lat"], @params["long"])
+			else
+				location = obj["results"][0]["formatted_address"]
+			end
+			WebView.navigate url_for_type(:action => :listing, :query => {:lat => @params["lat"], :long => @params["long"], :other_location => location})
+		end
 	end
 
 	def geocode_other_location_callback
@@ -127,18 +155,18 @@ class SearchController < Rho::RhoController
       puts " Http response: #{@params['body']}"
       WebView.navigate ( url_for_type :action => :geolocation_error ) 
     else
-    	obj = Rho::JSON.parse(@params["body"])
-    	if obj["Status"]["code"] != 200 or obj["Placemark"].length == 0
+    	obj = @params["body"]
+    	if obj["status"] != "OK" or obj["results"].length == 0
     		# No Results Found
     		WebView.navigate url_for_type(:action => :input_other_location, :query => { :error => "Address not found" })
-    	elsif obj["Placemark"].length > 1
+    	elsif obj["results"].length > 1
     		# More than one result found.
-    		str = obj["Placemark"].inject("[") { |a, pm| a += '"' + pm["address"] + '",' } + "]" # No JSON.generate in this version... :(
+    		str = obj["results"].inject("[") { |a, pm| a += '"' + pm["formatted_address"] + '",' } + "]" # No JSON.generate in this version... :(
     		WebView.navigate url_for_type(:action => :select_geocode_results, :query => { :addresses => Rho::RhoSupport.url_encode(str) })
 			else
-				coords = obj["Placemark"][0]["Point"]["coordinates"]
-				location = obj["name"]
-				WebView.navigate url_for_type(:action => :listing, :query => {:lat => coords[1], :long => coords[0], :other_location => location})
+				coords = obj["results"][0]["geometry"]["location"]
+				location = obj["results"][0]["formatted_address"]
+				WebView.navigate url_for_type(:action => :listing, :query => {:lat => coords["lat"], :long => coords["lng"], :other_location => location})
 			end
 		end
 	end
@@ -248,7 +276,7 @@ class SearchController < Rho::RhoController
 		map_params = {
 			:settings => {
 			  :map_type => "roadmap",
-				:region => [@lat, @long, 0.1, 0.1],
+				:region => [@lat, @long, 0.01, 0.01],
 				:zoom_enabled => true
 			},
 			:annotations => annotations

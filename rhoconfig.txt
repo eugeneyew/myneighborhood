@@ -31,8 +31,9 @@ logname='poc'
 # Hides forward button and animates back button transition
 jqtouch_mode=1
 
-# Geocoding URL, sprintf format, %s represents query string
-google_geocoding_url = 'http://maps.google.com/maps/geo?q=%s&output=json&key=123abc'
+# Geocoding URL, sprintf format, first %s represents param type (address or latlong). Second %s represents 
+# the value of this key
+google_geocoding_url = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&%s=%s'
 
 # Data URL base (no trailing slash)
 data_url_base = 'http://skawakam7.appspot.com/rest/json'
