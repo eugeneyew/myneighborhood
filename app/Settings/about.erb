@@ -1,3 +1,12 @@
+
+<!-- only show for Android - iPhone has own toolbar -->
+
+<% if System::get_property('platform') == 'ANDROID' %>
+    <div class="toolbar">
+    	<div class="leftItem" class="regularButton"><%= link_to "Back", :action => :index %></div>
+	</div>
+<% end %>
+
 <div class="content">
 	<center><img src="/public/images/logo.jpg" border="0" alt="logo"></center>
 	<h2><%= @appname %></h2>

@@ -1,4 +1,12 @@
 <div class="content">
+
+ <% if System::get_property('platform') == 'ANDROID' %>
+    <div class="toolbar">
+    	<div class="leftItem" class="regularButton"><%= link_to "Cancel", :action => :index %></div>
+    	<div class="rightItem" class="blueButton"><%= link_to "Confirm", :action => :do_reset %></div>
+	</div>
+<% end %>
+
   <h3>Are you sure?</h3>
 	<div style="margin: 10px;">This will clear your saved search history.</div>
 </div>
