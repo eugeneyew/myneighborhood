@@ -22,7 +22,7 @@ class SettingsController < Rho::RhoController
 
   def reset
   	navbar :title => "Clear Search History", :left => { :action => url_for(:action => :index), :label => "Back" }, :right => { :action => url_for(:action => :do_reset), :label => "Confirm" }
-    render :action => :reset
+    render 
   end
   
   def do_reset
@@ -48,6 +48,5 @@ class SettingsController < Rho::RhoController
 			@nav_right = hash[:right] if hash[:right]
 		end
 	end
-
   
 end
