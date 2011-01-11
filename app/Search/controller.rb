@@ -27,7 +27,7 @@ class SearchController < Rho::RhoController
 
 	def geolocation_error
 		resolve_type
-		navbar
+		navbar :title => "Error"
 		render # => geolocation_error.erb
 	end
 	
