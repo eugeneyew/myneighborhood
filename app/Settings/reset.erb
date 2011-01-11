@@ -1,5 +1,13 @@
 <%= render :partial => "partials/navbar", :locals => { :use_html_nav => @use_html_nav, :nav_left => @nav_left, :nav_right => @nav_right } %>
 <div class="content">
+
+ <% if System::get_property('platform') == 'ANDROID' %>
+    <div class="toolbar">
+    	<div class="leftItem" class="regularButton"><%= link_to "Cancel", :action => :index %></div>
+    	<div class="rightItem" class="blueButton"><%= link_to "Confirm", :action => :do_reset %></div>
+	</div>
+<% end %>
+
   <h3>Are you sure?</h3>
 	<div style="margin: 10px;">This will clear your saved search history.</div>
 </div>
