@@ -281,11 +281,14 @@ class SearchController < Rho::RhoController
 				:url => "/app/Search/details?entityName=" + pf["entityName"] + "&address=" + pf["addressBuilding"] + " " +  pf["addressStreetName"]  + " " + pf["addressCity"] + " " + pf["addressZipCode"] + "&facilityType=" + pf["facilityType"] + 	"&numberOfSpaces=" + pf["numberOfSpaces"] + 	"&telephoneNumber=" + pf["telephoneNumber"]}
 		end
 
+	#map_type has to be "standard" for Android
+	
 		map_params = {
 			:settings => {
-			  :map_type => "roadmap",
+				:map_type => "standard",
 				:region => [@lat, @long, 0.01, 0.01],
-				:zoom_enabled => true
+				:zoom_enabled => true,
+				:scroll_enabled => true
 			},
 			:annotations => annotations
 		}

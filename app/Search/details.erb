@@ -2,7 +2,7 @@
 <!-- only show for Android - iPhone has own toolbar -->
 <% if System::get_property('platform') == 'ANDROID' %>
     <div class="toolbar">
-    	<div class="leftItem" class="regularButton"><%= link_to "Back", :action => :index %></div>
+    	<div class="leftItem" class="regularButton"><%= link_to "Back", :action => :recent %></div>
 	</div>
 <% end %>
 <div class="content">
