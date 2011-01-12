@@ -278,7 +278,7 @@ class SearchController < Rho::RhoController
 				:longitude => pf["longitude"],
 				:title => pf["entityName"],
 				:subtitle => sprintf("%s %s %s", pf["addressBuilding"], pf["addressStreetName"], pf["addressCity"]),
-				:url => "" }
+				:url => "/app/Search/details?entityName=" + pf["entityName"] + "&address=" + pf["addressBuilding"] + " " +  pf["addressStreetName"]  + " " + pf["addressCity"] + " " + pf["addressZipCode"] + "&facilityType=" + pf["facilityType"] + 	"&numberOfSpaces=" + pf["numberOfSpaces"] + 	"&telephoneNumber=" + pf["telephoneNumber"]}
 		end
 
 		map_params = {
@@ -295,7 +295,9 @@ class SearchController < Rho::RhoController
 
 		# Put the listings page behind the plotted map
     switch_to_tab_for_type
-		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
+	#		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
+			WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
+
 
 	end
 

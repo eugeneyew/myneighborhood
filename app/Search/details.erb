@@ -1,0 +1,20 @@
+<%= render :partial => "partials/navbar", :locals => { :use_html_nav => @use_html_nav, :nav_left => @nav_left, :nav_right => @nav_right } %>
+<!-- only show for Android - iPhone has own toolbar -->
+<% if System::get_property('platform') == 'ANDROID' %>
+    <div class="toolbar">
+    	<div class="leftItem" class="regularButton"><%= link_to "Back", :action => :index %></div>
+	</div>
+<% end %>
+<div class="content">
+	<ul>
+		<li><%= @params['entityName']%></li>
+		<li>Address: <%= @params['address']%></li>
+		<li>
+			<%= link_to @params['telephoneNumber'], "tel:" + @params['telephoneNumber']%>
+		</li>
+
+		<li>Facility Type: <%= @params['facilityType']%></li>
+		<li>No. of Spaces: <%= @params['numberOfSpaces']%></li>
+	</ul>
+</div>
+
