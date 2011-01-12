@@ -223,7 +223,8 @@ class SearchController < Rho::RhoController
 		
 		# Call GAE Data Service then display the map
 		# or used saved search data...
-		url = sprintf("%s/parking_facility/%s,%s", Rho::RhoConfig.data_url_base, Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
+		# EY - added / at end of URL
+		url = sprintf("%s/parking_facility/%s,%s/", Rho::RhoConfig.data_url_base, Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
 		puts " Calling URL: " + url
 		Rho::AsyncHttp.get(
 				:url => url,
