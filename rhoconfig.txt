@@ -11,7 +11,7 @@ rhobundle_zip_url = ''
 rhobundle_zip_pwd = nil
 
 # Rhodes runtime properties
-MinSeverity  = 1
+MinSeverity  = 0
 LogToOutput = 1
 LogCategories = *
 ExcludeLogCategories =
@@ -39,8 +39,8 @@ google_geocoding_url = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=
 data_url_base = 'http://skawakam7.appspot.com/rest/json'
 
 # App Parameters
-appname = 'myNeighbourhood'
-version = '0.3'
+appname = 'NYCApps POC'
+version = '0.4'
 
 # Another change to demonstrate git
 # Change to RhoConfig to demonstrate GIT
