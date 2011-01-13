@@ -32,7 +32,8 @@ class SearchController < Rho::RhoController
 	end
 	
 	def select_geocode_results
-		@addresses = Rho::JSON.parse(@params["addresses"])
+		@addresses = Rho::JSON.parse(@params["addresses"])				
+		
 		navbar :title => "Select Other Location", :left => {:action => url_for_type(:action => :input_other_location), :label => "Back"}
 		render
 	end
@@ -166,8 +167,14 @@ class SearchController < Rho::RhoController
     	elsif obj["results"].length > 1
     		# More than one result found.
     		str = obj["results"].inject("[") { |a, pm| a += '"' + pm["formatted_address"] + '",' } + "]" # No JSON.generate in this version... :(
+        		
 				switch_to_tab_for_type
-    		WebView.navigate url_for_type(:action => :select_geocode_results, :query => { :addresses => Rho::RhoSupport.url_encode(str) })
+    
+    		#WebView.navigate url_for_type(:action => :select_geocode_results, :query => { :addresses => Rho::RhoSupport.url_encode(str) })
+			# removed url_encoding as it is causing issues for JSON parsing in Android
+			
+			WebView.navigate url_for_type(:action => :select_geocode_results, :query => { :addresses => str })
+			
 			else
 				coords = obj["results"][0]["geometry"]["location"]
 				location = obj["results"][0]["formatted_address"]
