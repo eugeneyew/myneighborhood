@@ -6,6 +6,8 @@ require 'json'
 
 class SearchController < Rho::RhoController
   include BrowserHelper
+
+  GeoTimeout = 10 # seconds
   
   def recent
 		@past_searches = Search.find(:all, :order => :last_use_time, :orderdir => "DESC", :per_page => 15)
@@ -19,18 +21,19 @@ class SearchController < Rho::RhoController
   	render # => wait.erb
 	end
 
-  def wait
+  def error
   	resolve_type
   	@message = @params["message"] || "An error has occured"
+		navbar :title => "Error", :left => {:action => url_for_type(:action => :index), :label => "Back"}
   	render # => error.erb
 	end
 
-	def geolocation_error
-		resolve_type
-		navbar :title => "Error"
-		render # => geolocation_error.erb
+	def details
+  	resolve_type
+		navbar :title => @params["entityName"], :left => {:action => url_for_type(:action => :recent), :label => "Back"}
+  	render # => details.erb
 	end
-	
+
 	def select_geocode_results
 		@addresses = Rho::JSON.parse(@params["addresses"])				
 		
@@ -43,7 +46,7 @@ class SearchController < Rho::RhoController
   	resolve_type
 		if @search_type == :nearby and !GeoLocation.known_position? and (@params["lat"].nil? and @params["long"].nil?)
 			navbar :title => "Nearby"
-			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), default_query_hash_str)
+			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), default_query_hash_str, GeoTimeout)
 			redirect_for_type :action => :wait, :query => { :message => "Finding your location..." }
 		elsif @search_type == :nearby and GeoLocation.known_position?
 			lat = GeoLocation.latitude
@@ -157,7 +160,7 @@ class SearchController < Rho::RhoController
       puts " Http error : #{@params['http_error']}"
       puts " Http response: #{@params['body']}"
       switch_to_tab_for_type
-      WebView.navigate ( url_for_type :action => :geolocation_error ) 
+      WebView.navigate ( url_for_type :action => :error ) 
     else
     	obj = @params["body"]
     	if obj["status"] != "OK" or obj["results"].length == 0
@@ -192,14 +195,14 @@ class SearchController < Rho::RhoController
 		webview_navigate_for_type(:index) if @params["known_position"].to_i != 0 && @params["status"] == "ok"
   	# Try again if the first call failed, seems to be needed on the simulator...
   	if @params["known_position"].to_i == 0 || @params["status"] != "ok" 
-			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), default_query_hash_str) 
+			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), default_query_hash_str, GeoTimeout) 
 			redirect_for_type :action => :wait, :query => { :message => "Finding your location..." }
 		end
 	end
 	
 	def nearby_geo_callback2
 		webview_navigate_for_type(:index) if @params["known_position"].to_i != 0 && @params["status"] == "ok"
-		webview_navigate_for_type(:geolocation_error) if @params["known_position"].to_i == 0 || @params["status"] != "ok"
+		webview_navigate_for_type(:error) if @params["known_position"].to_i == 0 || @params["status"] != "ok"
 	end
 
 	def map
