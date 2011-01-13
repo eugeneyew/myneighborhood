@@ -44,7 +44,7 @@ class SearchController < Rho::RhoController
 		if @search_type == :nearby and !GeoLocation.known_position? and (@params["lat"].nil? and @params["long"].nil?)
 			navbar :title => "Nearby"
 			GeoLocation.set_notification( url_for(:action => :nearby_geo_callback1), default_query_hash_str)
-			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
+			redirect_for_type :action => :wait, :query => { :message => "Finding your location..." }
 		elsif @search_type == :nearby and GeoLocation.known_position?
 			lat = GeoLocation.latitude
 			long = GeoLocation.longitude
@@ -193,7 +193,7 @@ class SearchController < Rho::RhoController
   	# Try again if the first call failed, seems to be needed on the simulator...
   	if @params["known_position"].to_i == 0 || @params["status"] != "ok" 
 			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), default_query_hash_str) 
-			redirect_for_type :action => :wait, :query => { :message => "Fixing your location..." }
+			redirect_for_type :action => :wait, :query => { :message => "Finding your location..." }
 		end
 	end
 	
