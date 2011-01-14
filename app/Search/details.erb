@@ -2,11 +2,12 @@
 <div class="content">
 	<ul>
 		<li><%= @params['entityName']%></li>
-		<li>Address: <%= @params['address']%></li>
 		<li>
-			<%= link_to @params['telephoneNumber'], "tel:" + @params['telephoneNumber']%>
+		<%= link_to @params['address'], "/system/map?q="+ @params['address'] %>
 		</li>
-
+		<li>
+		Tel:+<%= @params['telephoneNumber']%>
+		</li>
 		<li>Facility Type: <%= @params['facilityType']%></li>
 		<li>No. of Spaces: <%= @params['numberOfSpaces']%></li>
 	</ul>

@@ -129,7 +129,7 @@ class SearchController < Rho::RhoController
 				:callback => (url_for_type :action => cb_action),
 				:callback_param => query_hash_to_str(default_query_hash.merge(params)))
 
-		@message = "Searching for location..."
+		@message = "Finding location..."
 		render :action => :wait
 	end
 
@@ -196,7 +196,7 @@ class SearchController < Rho::RhoController
   	# Try again if the first call failed, seems to be needed on the simulator...
   	if @params["known_position"].to_i == 0 || @params["status"] != "ok" 
 			GeoLocation.set_notification( url_for_type(:action => :nearby_geo_callback2), default_query_hash_str, GeoTimeout) 
-			redirect_for_type :action => :wait, :query => { :message => "Finding your location..." }
+			redirect_for_type :action => :wait, :query => { :message => "Finding location..." }
 		end
 	end
 	

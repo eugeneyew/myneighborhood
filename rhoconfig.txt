@@ -40,7 +40,7 @@ data_url_base = 'http://skawakam7.appspot.com/rest/json'
 
 # App Parameters
 appname = 'NYCApps POC'
-version = '0.4'
+version = '0.5'
 
 # Another change to demonstrate git
 # Change to RhoConfig to demonstrate GIT
