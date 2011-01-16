@@ -6,7 +6,7 @@
 		<%= link_to @params['address'], "/system/map?q="+ @params['address'] %>
 		</li>
 		<li>
-		Tel:+<%= @params['telephoneNumber']%>
+		Tel:<a href="tel:<%= @params["telephoneNumber"] %>" target="_blank" rel="external">+<%= @params['telephoneNumber'] %></a>
 		</li>
 		<li>Facility Type: <%= @params['facilityType']%></li>
 		<li>No. of Spaces: <%= @params['numberOfSpaces']%></li>
