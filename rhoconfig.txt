@@ -36,8 +36,8 @@ jqtouch_mode=1
 google_geocoding_url = 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&%s=%s'
 
 # Data URL base (no trailing slash)
-data_url_base = 'http://skawakam7.appspot.com/rest/json'
-#data_url_base = 'http://nyc-apps-poc.appspot.com/rest/json'
+#data_url_base = 'http://skawakam7.appspot.com/rest/json'
+data_url_base = 'http://nyc-apps-poc.appspot.com/rest/json'
 
 # App Parameters
 appname = 'NYCApps POC'
