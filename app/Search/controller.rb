@@ -129,7 +129,7 @@ class SearchController < Rho::RhoController
 				:callback => (url_for_type :action => cb_action),
 				:callback_param => query_hash_to_str(default_query_hash.merge(params)))
 
-		@message = "Finding location..."
+		@message = "Finding location.. Please ensure location services is enabled for your device."
 		render :action => :wait
 	end
 
@@ -241,7 +241,7 @@ class SearchController < Rho::RhoController
 				:callback => (url_for_type :action => :display_mapped_data_callback),
 				:callback_param => query_hash_to_str(default_query_hash.merge(params)))
 		
-		@message = "Retrieving data..."
+		@message = "Retrieving data. Please ensure your device has a data connection.."
 		render :action => :wait
 
 	end
