@@ -143,7 +143,7 @@ class SearchController < Rho::RhoController
     else
     	obj = @params["body"]
     	if obj["status"] != "OK" or obj["results"].length == 0
-    		# No Results Found. Use "Lat,Long",  as locatoin name and send them on their way.
+    		# No Results Found. Use "Lat,Long",  as location name and send them on their way.
     		#WebView.navigate url_for_type(:action => :input_other_location, :query => { :error => "Address not found" })
     		location = sprintf("%s,%s", @params["lat"], @params["long"])
 			else
@@ -233,7 +233,7 @@ class SearchController < Rho::RhoController
 		
 		# Call GAE Data Service then display the map
 		# or used saved search data...
-		# EY - added / at end of URL
+		# Added / at end of URL
 		url = sprintf("%s/parking_facility/%s,%s/", Rho::RhoConfig.data_url_base, Rho::RhoSupport.url_encode(@lat), Rho::RhoSupport.url_encode(@long))
 		puts " Calling URL: " + url
 		Rho::AsyncHttp.get(
@@ -308,7 +308,6 @@ class SearchController < Rho::RhoController
 
 		# Put the listings page behind the plotted map
     switch_to_tab_for_type
-	#		WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
 			WebView.navigate url_for_type(:action => :listing, :query => {:lat => @lat, :long => @long, :other_location => @location })
 
 
