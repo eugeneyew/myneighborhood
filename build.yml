@@ -1,28 +1,26 @@
----
-name: My Neighbourhood
-capabilities:
-- gps
-
-bbver: 5.0
-sdk: "/opt/local/lib/ruby/gems/1.8/gems/rhodes-2.2.6"
-sdkversion: 2.2.6
-applog: rholog.txt
-version: 1.0
-vendor: rhomobile
-wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
-iphone:
-  empulator: 4.0.2
-  sdk: iphonesimulator4.0
-  configuration: Debug
-  codesignidentity: ""
-  entitlements: ""
-  BundleIdentifier: com.accenture.iphone.myneighbourhood
-  BundleURLScheme: myneighbourhood
-android:
-  mapping: yes
-  apikey: "0huG34HA0SCUkQz7qbLgG2LsZGrZxb5VPqAMnRQ"
-  version: 2.2
-
+--- 
 extensions: 
 - json
 - uri
+name: NYCAppsPOC
+capabilities: 
+- gps
+bbver: 5.0
+android: 
+  version: 2.1
+  apikey: 0CkzmD4eTF4jpcc5I5s1IcVEJ_X-9AZ9gqNiflQ
+  mapping: true
+sdk: /Library/Ruby/Gems/1.8/gems/rhodes-2.2.6
+applog: rholog.txt
+wmsdk: Windows Mobile 6 Professional SDK (ARMV4I)
+version: 1.0
+vendor: rhomobile
+sdkversion: 2.2.6
+iphone: 
+  BundleURLScheme: myneighbourhood
+  BundleIdentifier: com.accenture.iphone.myneighbourhood
+  sdk: iphonesimulator4.0
+  entitlements: ""
+  codesignidentity: ""
+  configuration: Debug
+  empulator: 4.0.2
