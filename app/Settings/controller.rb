@@ -14,14 +14,15 @@ class SettingsController < Rho::RhoController
 
 	# Get AppName and Version from rhoconfig.txt
   def about
-  	navbar :title => "About My Neighbourhood", :left => { :action => url_for(:action => :index), :label => "Back" }
     @appname = Rho::RhoConfig.appname
     @appversion = Rho::RhoConfig.version
+    navbar :title => @appname, :left => { :action => url_for(:action => :index), :label => "Back" }
+
     render
   end
 
   def reset
-  	navbar :title => "Clear Search History", :left => { :action => url_for(:action => :index), :label => "Back" }, :right => { :action => url_for(:action => :do_reset), :label => "Confirm" }
+  	navbar :title => "Clear Search", :left => { :action => url_for(:action => :index), :label => "Cancel" }, :right => { :action => url_for(:action => :do_reset), :label => "Confirm" }
     render 
   end
   
@@ -39,7 +40,7 @@ class SettingsController < Rho::RhoController
 		platform = System::get_property('platform')
 		if platform == "APPLE"
 			@use_html_nav = false
-			@title = "My Neighbourhood"
+			@title = @appname
 			NavBar.create hash
 		else
 			@use_html_nav = true
