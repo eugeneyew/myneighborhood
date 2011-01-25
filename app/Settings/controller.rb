@@ -28,9 +28,8 @@ class SettingsController < Rho::RhoController
   
   def do_reset
     Rhom::Rhom.database_full_reset
-    SyncEngine.dosync
-    @msg = "Search history has been cleared"
-    redirect :action => :index, :query => {:msg => @msg}
+    Alert.show_popup "Search history has been cleared"
+    redirect :action => :index
   end
 
   private

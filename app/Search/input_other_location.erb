@@ -1,10 +1,5 @@
 <%= render :partial => "partials/navbar", :locals => { :use_html_nav => @use_html_nav, :nav_left => @nav_left, :nav_right => @nav_right } %>
 <div class="content">
-	<% unless @error.nil? %>
-		<div class="form_error">
-			<%= @error %>
-		</div>
-	<% end %>
 	<form title="Other Location" method="POST" action="<%= url_for_type(:action => :geocode_other_location) %>">
     <ul>
 			<li>
