@@ -57,7 +57,7 @@
                 touchSelectors = [],
                 publicObj = {},
                 extensions = $.jQTouch.prototype.extensions,
-                defaultAnimations = ['slide','flip','slideup','swap','cube','pop','dissolve','fade','back'],
+                defaultAnimations = ['slide', 'slideback','flip','slideup','swap','cube','pop','dissolve','fade','back'],
                 animations = [],
                 hairextensions = '';
 
@@ -85,6 +85,7 @@
                 preloadImages: false,
 //                slideSelector: 'body > * > ul li a',
                 slideSelector: 'a',
+                slidebackSelector: '.slideback',
                 slideupSelector: '.slideup',
                 startupScreen: null,
                 statusBar: 'default', // other options: black-translucent, black
@@ -355,6 +356,12 @@
         }
 
         function animatePages(fromPage, toPage, animation, backwards) {
+
+            if(animation && animation.name == "slideback") {
+              animation = { name: "slide", selector: "" }; // hack, switch to slide animation + backwards
+              backwards = true;
+            }
+
             // Error check for target page
             if (toPage.length === 0) {
                 $.fn.unselect();

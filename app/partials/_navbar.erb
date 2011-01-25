@@ -1,7 +1,7 @@
 <% if @use_html_nav and (@nav_left or @nav_right) %>
 	<div class="toolbar">
 		<% if @nav_left %>
-			<div class="leftItem backButton"><a href="<%= @nav_left[:action] %>"><%= @nav_left[:label] %></a></div>
+			<div class="leftItem regularButton"><a class="slideback" href="<%= @nav_left[:action] %>" onclick=""><%= @nav_left[:label] %></a></div>
 		<% end %>
 		<% if @nav_right %>
 			<div class="rightItem regularButton"><a href="<%= @nav_right[:action] %>"><%= @nav_right[:label] %></a></div>
