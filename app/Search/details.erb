@@ -1,15 +1,24 @@
 <%= render :partial => "partials/navbar", :locals => { :use_html_nav => @use_html_nav, :nav_left => @nav_left, :nav_right => @nav_right } %>
 <div class="content">
 	<ul>
-		<li><%= @params['entityName']%></li>
 		<li>
-		<%= link_to @params['address'], "/system/map?q="+ @params['address'] %>
+			<div class="itemLabel">Name</div>
+			<div class="itemValue"><%= @params['entityName']%></div>
 		</li>
 		<li>
-		<a href="tel:<%= @params["telephoneNumber"] %>" target="_blank" rel="external">+<%= @params['telephoneNumber'] %></a>
+			<%= link_to @params['address'], "/system/map?q="+ @params['address'] %>
 		</li>
-		<li>Facility Type: <%= @params['facilityType']%></li>
-		<li>No. of Spaces: <%= @params['numberOfSpaces']%></li>
+		<li>
+			<a href="tel:<%= @params["telephoneNumber"] %>" target="_blank" rel="external">+<%= @params['telephoneNumber'] %></a>
+		</li>
+		<li>
+			<div class="itemLabel">Facility Type</div>
+			<div class="itemValue"><%= @params['facilityType']%></div>
+		</li>
+		<li>
+			<div class="itemLabel">No of Spaces</div>
+			<div class="itemValue"><%= @params['numberOfSpaces']%></div>
+		</li>
 	</ul>
 </div>
 
