@@ -321,7 +321,7 @@ class SearchController < Rho::RhoController
 		platform = System::get_property('platform')
 		if platform == "APPLE"
 			@use_html_nav = false
-			@title = "My Neighbourhood"
+			@title = @appname
 			NavBar.create hash
 		else
 			@use_html_nav = true
