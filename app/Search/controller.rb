@@ -166,7 +166,8 @@ class SearchController < Rho::RhoController
     	if obj["status"] != "OK" or obj["results"].length == 0
     		# No Results Found
 				switch_to_tab_for_type
-    		WebView.navigate url_for_type(:action => :input_other_location, :query => { :error => "Address not found" })
+    		WebView.navigate url_for_type(:action => :input_other_location)
+    		Alert.show_popup "Address not found"
     	elsif obj["results"].length > 1
     		# More than one result found.
     		str = obj["results"].inject("[") { |a, pm| a += '"' + pm["formatted_address"] + '",' } + "]" # No JSON.generate in this version... :(
