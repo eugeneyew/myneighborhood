@@ -41,5 +41,5 @@ data_url_base = 'http://nyc-apps-poc.appspot.com/rest/json'
 
 # App Parameters
 appname = 'NYCApps POC'
-version = '0.9'
+version = '1.0'
 
