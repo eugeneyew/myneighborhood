@@ -30,7 +30,7 @@ class SearchController < Rho::RhoController
 
 	def details
   	resolve_type
-		navbar :title => @params["entityName"], :left => {:action => url_for_type(:action => :recent), :label => "Back"}
+		navbar :title => @params["entityName"], :left => {:action => url_for_type(:action => :index), :label => "Back"}
   	render # => details.erb
 	end
 
@@ -289,7 +289,7 @@ class SearchController < Rho::RhoController
 				:longitude => pf["longitude"],
 				:title => pf["entityName"],
 				:subtitle => sprintf("%s %s %s", pf["addressBuilding"], pf["addressStreetName"], pf["addressCity"]),
-				:url => "/app/Search/details?entityName=" + pf["entityName"] + "&address=" + pf["addressBuilding"] + " " +  pf["addressStreetName"]  + " " + pf["addressCity"] + " " + pf["addressZipCode"] + "&facilityType=" + pf["facilityType"] + 	"&numberOfSpaces=" + pf["numberOfSpaces"] + 	"&telephoneNumber=" + pf["telephoneNumber"]}
+				:url => "/app/Search/details?type=" + @params["type"] + "&entityName=" + pf["entityName"] + "&address=" + pf["addressBuilding"] + " " +  pf["addressStreetName"]  + " " + pf["addressCity"] + " " + pf["addressZipCode"] + "&facilityType=" + pf["facilityType"] + 	"&numberOfSpaces=" + pf["numberOfSpaces"] + 	"&telephoneNumber=" + pf["telephoneNumber"]}
 		end
 
 	#map_type has to be "standard" for Android
