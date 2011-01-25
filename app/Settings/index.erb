@@ -1,7 +1,9 @@
 <div class="content">
   <ul>
     <% if @msg %>
-        <li style="color: red; text-align: center"><%= @msg %></li>
+			<li style="color: red; font-face: strong; text-align: center; margin-top: 15px; ">
+				<%= @msg %>
+			</li>
     <% end %>
     <li><a href="<%= url_for :action => :about %>">About this app</a></li>
     <li><a href="<%= url_for :action => :reset %>">Clear recent searches</li>
