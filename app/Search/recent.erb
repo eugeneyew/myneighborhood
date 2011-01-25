@@ -3,7 +3,7 @@
 	<ul>
 		<% if @past_searches.length == 0 %>
 			<li>
-				No Recent Searches
+				<a href="#"><img src="/public/images/184-warning.png" style="width: 20px; height: 16px; margin: 4px 10px 0 10px; " /> No Recent Searches</a>
 			</li>
 		<% else %>
 			<% @past_searches.each do |search| %>
